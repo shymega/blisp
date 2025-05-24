@@ -10,7 +10,6 @@
   testers,
   IOKit ? null,
 }:
-
 stdenv.mkDerivation (finalAttrs: {
   pname = "blisp";
   version = "0.0.4-unstable";
@@ -21,10 +20,12 @@ stdenv.mkDerivation (finalAttrs: {
     pkg-config
   ];
 
-  buildInputs = [
-    argtable
-    libserialport
-  ] ++ lib.optional stdenv.hostPlatform.isDarwin IOKit;
+  buildInputs =
+    [
+      argtable
+      libserialport
+    ]
+    ++ lib.optional stdenv.hostPlatform.isDarwin IOKit;
 
   cmakeFlags = [
     "-DBLISP_BUILD_CLI=ON"
@@ -38,12 +39,15 @@ stdenv.mkDerivation (finalAttrs: {
     version = "v${finalAttrs.version}";
   };
 
-  meta = with lib; {
+  meta = {
     description = "In-System-Programming (ISP) tool & library for Bouffalo Labs RISC-V Microcontrollers and SoCs";
-    license = licenses.mit;
+    license = lib.licenses.mit;
     mainProgram = "blisp";
     homepage = "https://github.com/pine64/blisp";
-    platforms = platforms.unix;
-    maintainers = [ maintainers.bdd ];
+    platforms = lib.platforms.unix;
+    maintainers = with lib.maintainers; [
+      bdd
+      shymega
+    ];
   };
 })

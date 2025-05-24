@@ -1,13 +1,13 @@
 {
-  description = "A very basic flake";
+  description = "Flake for the 'blisp' tool.";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
-  outputs =
-    { self, nixpkgs, ... }@inputs:
+  outputs = inputs:
     let
+      inherit (inputs) self nixpkgs;
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -20,9 +20,8 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
         in
-        with pkgs;
         {
-          blisp = callPackage ./blisp.nix { inherit self; };
+          blisp = pkgs.callPackage ./package.nix { inherit self; };
           default = self.packages.${system}.blisp;
         }
       );
@@ -32,11 +31,10 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
         in
-        with pkgs;
         {
-          default = mkShell {
+          default = pkgs.mkShell {
             name = "blisp-dev";
-            nativeBuildInputs = [ self.packages.${system}.default ];
+            inputsFrom = with self.packages.${system}; [ blisp ];
           };
         }
       );
